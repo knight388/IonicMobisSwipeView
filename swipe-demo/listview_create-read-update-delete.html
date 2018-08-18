@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+    <title>Create, Read, Update, Delete</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.min.js"></script> -->
+
+    <!-- Mobiscroll JS and CSS Includes -->
+    <link rel="stylesheet" href="css/mobiscroll.angularjs.min.css">
+    <script src="js/mobiscroll.angularjs.min.js"></script>
+
+    <style type="text/css">
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    </style>
+
+</head>
+<body>
+
+<div  class="demo-create-read-update-delete">
+    <div ng-app="demoApp" ng-controller="demoController">
+        <div mobiscroll-form="formSettings">
+            <ul mobiscroll-listview="listviewSettings" mobiscroll-data="todo" style="display:none">
+                <li>{{item.text}}
+               
+                </li>
+            </ul>
+          
+        </div>
+    </div>
+</div>
+
+<script>
+    mobiscroll.settings = {
+        theme: 'ios',
+        lang: 'en'
+    };
+
+    angular
+        .module('demoApp', ['mobiscroll-form', 'mobiscroll-listview'])
+        .controller('demoController', ['$scope', function ($scope) {
+    
+            $scope.formSettings = {
+                lang: 'en',    // Specify language like: lang: 'pl' or omit setting to use default
+                theme: 'ios'   // Specify theme like: theme: 'ios' or omit setting to use default
+            };
+    
+            var formatDate = mobiscroll.util.datetime.formatDate,
+                now = formatDate('DD d hh:ii:ss A', new Date());
+    
+            $scope.todo = [{
+                    text: 'Check Mobiscroll demos',
+                    time: now
+                },
+                {
+                    text: 'Feed the pets',
+                    time: now
+                },
+                {
+                    text: 'Send an invitation email to Emily',
+                    time: now
+                },
+                {
+                    text: 'Watch the new Arrow episode',
+                    time: now
+                },
+                {
+                    text: 'Wash the dishes',
+                    time: now
+                }
+            ];
+    
+            $scope.listviewSettings = {
+                theme: 'ios',  // Specify theme like: theme: 'ios' or omit setting to use default
+                lang: 'en',    // Specify language like: lang: 'pl' or omit setting to use default
+                stages: [{     // More info about stages: https://docs.mobiscroll.com/4-3-1/angularjs/listview#opt-stages
+                    percent: -25,
+                    color: 'red',
+                    text: 'Delete',
+                    confirm: true,
+                    action: function (event, inst) {
+                        $scope.$apply(function () {
+                            $scope.todo.splice(event.index, 1);
+                        });
+                        return false;
+                    }
+                }, {
+                    percent: 25,
+                    color: 'green',
+                    text: 'Update',
+                    action: function (event, inst) {
+                        $scope.$apply(function () {
+                            $scope.todo[event.index].time = formatDate('DD d hh:ii:ss A', new Date());
+                        });
+                    }
+                }]
+            };
+    
+            $scope.addNew = function () {
+                mobiscroll.prompt({ 
+                    
+                    title: 'New item',
+                    message: 'Enter a description and add it to the list of existing tasks.',
+                    placeholder: 'What to do next...',
+                    callback: function (value) {
+                        if (value !== null) {
+                            $scope.$apply(function () {
+                                $scope.todo.push({ text: value ? value : 'New item', time: formatDate('DD d hh:ii:ss A', new Date()) });
+                            });
+                            mobiscroll.toast({ 
+                                
+                                message: 'New item added'
+                            });
+                        }
+                    }
+                });
+            };
+    
+        }]);
+</script>
+
+</body>
+</html>
